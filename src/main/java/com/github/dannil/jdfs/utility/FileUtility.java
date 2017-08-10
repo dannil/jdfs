@@ -7,7 +7,7 @@ import java.security.MessageDigest;
 
 public class FileUtility {
 
-    public static String getFileChecksum(MessageDigest digest, File file) throws IOException {
+    public static String getChecksum(MessageDigest digest, File file) throws IOException {
         // Get file input stream for reading the file content
         FileInputStream fis = new FileInputStream(file);
 
