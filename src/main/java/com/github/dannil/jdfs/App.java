@@ -40,6 +40,10 @@ public class App {
         FileAccesser accesser = FileAccesser.getInstance();
         accesser.indexLocalDatabase();
 
+        for (java.io.File f : accesser.getDeletedFiles()) {
+            // System.out.println(f);
+        }
+
         // TEST CODE
         // Random r = new Random();
         // File f = new File("path/to/file" + r.nextInt(1000), ZonedDateTime.now());

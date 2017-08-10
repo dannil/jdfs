@@ -9,9 +9,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import com.github.dannil.jdfs.dba.FileDBA;
 import com.github.dannil.jdfs.model.File;
+import com.github.dannil.jdfs.service.FileService;
 import com.github.dannil.jdfs.utility.FileUtility;
 
 import org.apache.commons.io.FileUtils;
@@ -27,7 +28,7 @@ public class FileAccesser {
 
     private static Object mutex = new Object();
 
-    private FileDBA dba;
+    private FileService service;
 
     public static FileAccesser getInstance() {
         if (accesser == null) {
@@ -41,7 +42,7 @@ public class FileAccesser {
     }
 
     public FileAccesser() {
-        this.dba = new FileDBA();
+        this.service = new FileService();
     }
 
     public File toModelFile(java.io.File f) {
@@ -67,15 +68,14 @@ public class FileAccesser {
             throw new RuntimeException(e);
         }
 
-        File modelFile = new File(path, t);
-        modelFile.setHash(hash);
+        File modelFile = new File(path, t, hash);
         return modelFile;
     }
 
-    public Collection<File> getModelFiles() {
+    public List<File> getModelFiles() {
         LOGGER.info("Retrieving local model files");
-        Collection<java.io.File> localFiles = getLocalFiles();
-        Collection<File> dbFiles = new ArrayList<>(localFiles.size());
+        List<java.io.File> localFiles = getFiles();
+        List<File> dbFiles = new ArrayList<>(localFiles.size());
         for (java.io.File f : localFiles) {
             dbFiles.add(toModelFile(f));
         }
@@ -83,21 +83,56 @@ public class FileAccesser {
         return dbFiles;
     }
 
-    public Collection<java.io.File> getLocalFiles() {
+    public List<java.io.File> getFiles() {
         synchronized (mutex) {
             LOGGER.info("Retrieving local files");
             Collection<java.io.File> localFiles = FileUtils.listFiles(new java.io.File("files"),
                     TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
             LOGGER.info("Local files retrieved");
-            return localFiles;
+            return new ArrayList<>(localFiles);
+        }
+    }
+
+    public List<java.io.File> getDeletedFiles() {
+        synchronized (mutex) {
+            List<File> dbFiles = this.service.getAll();
+            List<java.io.File> localFiles = getFiles();
+
+            List<String> paths = new ArrayList<>();
+            for (java.io.File f : localFiles) {
+                paths.add(f.getPath());
+            }
+
+            List<java.io.File> deletedFiles = new ArrayList<>();
+            for (int i = 0; i < dbFiles.size(); i++) {
+                File f = dbFiles.get(i);
+                if (!paths.contains(f.getPath())) {
+                    deletedFiles.add(new java.io.File(f.getPath()));
+                }
+            }
+            System.out.println("DELETED: " + deletedFiles);
+            return deletedFiles;
         }
     }
 
     public void indexLocalDatabase() {
         synchronized (mutex) {
             LOGGER.info("Started indexing database, this may take awhile...");
-            ArrayList<java.io.File> localFiles = new ArrayList<>(getLocalFiles());
+
+            List<java.io.File> localFiles = getFiles();
             int interval = Math.max(localFiles.size() / 10, 10);
+
+            // Delete entries from database which have no local file representation
+            // TODO
+            List<File> modelFiles = this.service.getAll();
+            for (int i = 0; i < localFiles.size(); i++) {
+                File f = toModelFile(localFiles.get(i));
+                for (int j = 0; j < modelFiles.size(); j++) {
+
+                }
+            }
+
+            // Add new or update existing entries in database
             for (int i = 0; i < localFiles.size(); i++) {
                 File f = toModelFile(localFiles.get(i));
                 if ((i + 1) % interval == 0) {
@@ -105,7 +140,7 @@ public class FileAccesser {
                     // stalled
                     LOGGER.info("Indexing {} of {} files, processing {}", i + 1, localFiles.size(), f.getPath());
                 }
-                this.dba.saveOrUpdate(f);
+                this.service.saveOrUpdate(f);
             }
             LOGGER.info("Indexed database with local files");
         }

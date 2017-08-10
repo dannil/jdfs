@@ -19,7 +19,6 @@ public class FileUtility {
         while ((bytesCount = fis.read(byteArray)) != -1) {
             digest.update(byteArray, 0, bytesCount);
         }
-        ;
 
         // close the stream; We don't need it now.
         fis.close();

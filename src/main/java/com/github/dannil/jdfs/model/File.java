@@ -3,7 +3,10 @@ package com.github.dannil.jdfs.model;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -13,27 +16,35 @@ import javax.validation.constraints.NotNull;
 public class File {
 
     // TODO THIS DOES NOT WORK
-    // @GeneratedValue(strategy = GenerationType.AUTO)
+    // Id is null in database
+    // @GeneratedValue only works on fields also annotated with @Id, but id is in this
+    // case not the primary key
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Integer id;
 
-    @Id
+    @Column(name = "path", unique = true)
     @NotNull
     private String path;
 
+    @Column(name = "last_changed")
     @NotNull
     private ZonedDateTime lastChanged;
 
+    @Column(name = "hash")
     @NotNull
     private String hash;
 
-    public File() {
+    protected File() {
         super();
     }
 
-    public File(String path, ZonedDateTime lastChanged) {
+    public File(String path, ZonedDateTime lastChanged, String hash) {
         this();
-        this.path = path;
-        this.lastChanged = lastChanged;
+        this.path = Objects.requireNonNull(path);
+        this.lastChanged = Objects.requireNonNull(lastChanged);
+        this.hash = Objects.requireNonNull(hash);
     }
 
     // public File(Integer id, String path, ZonedDateTime lastChanged) {
@@ -42,7 +53,7 @@ public class File {
     // }
 
     public Integer getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Integer id) {
@@ -75,7 +86,7 @@ public class File {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.path, this.lastChanged);
+        return Objects.hash(this.path, this.lastChanged);
     }
 
     @Override
@@ -92,7 +103,8 @@ public class File {
 
     @Override
     public String toString() {
-        return "File [id=" + id + ", path=" + path + ", lastChanged=" + lastChanged + "]";
+        return "File [id=" + this.id + ", path=" + this.path + ", lastChanged=" + this.lastChanged + ", hash="
+                + this.hash + "]";
     }
 
 }
