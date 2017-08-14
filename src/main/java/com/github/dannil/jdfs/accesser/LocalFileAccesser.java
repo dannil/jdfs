@@ -5,8 +5,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +54,7 @@ public class LocalFileAccesser {
 
         LocalDateTime t2 = LocalDateTime.ofInstant(i, ZoneId.systemDefault());
 
-        ZonedDateTime t = ZonedDateTime.ofInstant(i, ZoneId.systemDefault());
+        OffsetDateTime t = OffsetDateTime.ofInstant(i, ZoneId.systemDefault());
 
         // System.out.println(t);
         // System.out.println(t2);

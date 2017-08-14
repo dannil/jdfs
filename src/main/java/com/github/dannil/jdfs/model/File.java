@@ -1,6 +1,6 @@
 package com.github.dannil.jdfs.model;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -30,7 +30,7 @@ public class File {
 
     @Column(name = "last_changed")
     @NotNull
-    private ZonedDateTime lastChanged;
+    private OffsetDateTime lastChanged;
 
     @Column(name = "hash")
     @NotNull
@@ -40,7 +40,7 @@ public class File {
         super();
     }
 
-    public File(String path, ZonedDateTime lastChanged, String hash) {
+    public File(String path, OffsetDateTime lastChanged, String hash) {
         this();
         this.path = Objects.requireNonNull(path);
         this.lastChanged = Objects.requireNonNull(lastChanged);
@@ -68,11 +68,11 @@ public class File {
         this.path = path;
     }
 
-    public ZonedDateTime getLastChanged() {
+    public OffsetDateTime getLastChanged() {
         return this.lastChanged;
     }
 
-    public void setLastChanged(ZonedDateTime lastChanged) {
+    public void setLastChanged(OffsetDateTime lastChanged) {
         this.lastChanged = lastChanged;
     }
 
