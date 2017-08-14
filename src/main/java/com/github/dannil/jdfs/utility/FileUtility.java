@@ -4,8 +4,42 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+
+import com.github.dannil.jdfs.model.FileModel;
 
 public class FileUtility {
+
+    public static FileModel toModelFile(java.io.File f) {
+        // Get path
+        String path = f.getPath();
+
+        // Get last changed time
+        Instant i = Instant.ofEpochMilli(f.lastModified());
+
+        LocalDateTime t2 = LocalDateTime.ofInstant(i, ZoneId.systemDefault());
+
+        OffsetDateTime t = OffsetDateTime.ofInstant(i, ZoneId.systemDefault());
+
+        // System.out.println(t);
+        // System.out.println(t2);
+
+        // Get hash
+        String hash = null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA1");
+            hash = FileUtility.getChecksum(digest, f);
+        } catch (NoSuchAlgorithmException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        FileModel modelFile = new FileModel(path, t, hash);
+        return modelFile;
+    }
 
     public static String getChecksum(MessageDigest digest, File file) throws IOException {
         // Get file input stream for reading the file content

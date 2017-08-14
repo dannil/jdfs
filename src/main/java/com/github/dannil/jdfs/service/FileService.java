@@ -7,7 +7,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import com.github.dannil.jdfs.manager.PersistenceManager;
-import com.github.dannil.jdfs.model.File;
+import com.github.dannil.jdfs.model.FileModel;
 
 public class FileService {
 
@@ -17,7 +17,7 @@ public class FileService {
         this.entityManager = PersistenceManager.getInstance().getEntityManagerFactory().createEntityManager();
     }
 
-    public void save(File file) {
+    public void save(FileModel file) {
         // Session session = sessionFactory.openSession();
         // Transaction tx = session.beginTransaction();
 
@@ -33,32 +33,45 @@ public class FileService {
         // session.close();
     }
 
-    public File update(File file) {
+    public FileModel update(FileModel file) {
         EntityTransaction tx = this.entityManager.getTransaction();
 
         tx.begin();
-        File f = this.entityManager.merge(file);
+        FileModel f = this.entityManager.merge(file);
         tx.commit();
 
         return f;
+        // return saveOrUpdate(file);
     }
 
-    public void saveOrUpdate(File file) {
-        EntityTransaction tx = this.entityManager.getTransaction();
+    // public File saveOrUpdate(File file) {
+    // EntityTransaction tx = this.entityManager.getTransaction();
+    //
+    // tx.begin();
+    //
+    // // try {
+    // // this.entityManager.persist(file);
+    // // } catch (ConstraintViolationException e) {
+    // //
+    // // }
+    //
+    // // File f = getByPath(file.getPath());
+    // // if (f == null) {
+    // // this.entityManager.persist(file);
+    // // } else {
+    // // f.set
+    // // }
+    //
+    // // if (f == null) {
+    // //
+    // // } else {
+    // // this.entityManager.merge(file);
+    // // }
+    // tx.commit();
+    // return file;
+    // }
 
-        tx.begin();
-        // File f = getByPath(file.getPath());
-        // if (f != null) {
-        // this.entityManager.refresh(file);
-        // } else {
-        // this.entityManager.merge(file);
-        // }
-        //
-        // this.entityManager.merge(file);
-        tx.commit();
-    }
-
-    public void remove(File file) {
+    public void remove(FileModel file) {
         EntityTransaction tx = this.entityManager.getTransaction();
 
         tx.begin();
@@ -66,22 +79,22 @@ public class FileService {
         tx.commit();
     }
 
-    public File getByPath(String path) {
-        Query query = this.entityManager.createQuery("SELECT f FROM File f WHERE f.path = :path");
+    public FileModel getByPath(String path) {
+        Query query = this.entityManager.createQuery("SELECT f FROM FileModel f WHERE f.path = :path");
         query.setParameter("path", path);
         // List<File> fileWrapper = query.getResultList();
         return getSingleResult(query);
         // return this.entityManager.find(File.class, path);
     }
 
-    public File getById(int id) {
-        Query query = this.entityManager.createQuery("SELECT f FROM File f WHERE f.id = :id");
+    public FileModel getById(int id) {
+        Query query = this.entityManager.createQuery("SELECT f FROM FileModel f WHERE f.id = :id");
         query.setParameter("id", id);
         return getSingleResult(query);
     }
 
-    public List<File> getAll() {
-        Query query = this.entityManager.createQuery("SELECT f FROM File f");
+    public List<FileModel> getAll() {
+        Query query = this.entityManager.createQuery("SELECT f FROM FileModel f");
         return query.getResultList();
     }
 

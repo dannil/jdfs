@@ -1,17 +1,10 @@
 package com.github.dannil.jdfs.accesser;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.github.dannil.jdfs.model.File;
+import com.github.dannil.jdfs.model.FileModel;
 import com.github.dannil.jdfs.service.FileService;
 import com.github.dannil.jdfs.utility.FileUtility;
 
@@ -45,45 +38,18 @@ public class LocalFileAccesser {
         this.service = new FileService();
     }
 
-    public File toModelFile(java.io.File f) {
-        // Get path
-        String path = f.getPath();
-
-        // Get last changed time
-        Instant i = Instant.ofEpochMilli(f.lastModified());
-
-        LocalDateTime t2 = LocalDateTime.ofInstant(i, ZoneId.systemDefault());
-
-        OffsetDateTime t = OffsetDateTime.ofInstant(i, ZoneId.systemDefault());
-
-        // System.out.println(t);
-        // System.out.println(t2);
-
-        // Get hash
-        String hash = null;
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA1");
-            hash = FileUtility.getChecksum(digest, f);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        File modelFile = new File(path, t, hash);
-        return modelFile;
-    }
-
-    public List<File> getModelFiles() {
+    public Collection<FileModel> getModelFiles() {
         LOGGER.info("Retrieving local model files");
-        List<java.io.File> localFiles = getFiles();
-        List<File> dbFiles = new ArrayList<>(localFiles.size());
+        List<java.io.File> localFiles = getLocalFiles();
+        List<FileModel> dbFiles = new ArrayList<>(localFiles.size());
         for (java.io.File f : localFiles) {
-            dbFiles.add(toModelFile(f));
+            dbFiles.add(FileUtility.toModelFile(f));
         }
         LOGGER.info("Local model files retrieved");
         return dbFiles;
     }
 
-    public List<java.io.File> getFiles() {
+    public List<java.io.File> getLocalFiles() {
         synchronized (mutex) {
             LOGGER.info("Retrieving local files");
             Collection<java.io.File> localFiles = FileUtils.listFiles(new java.io.File("files"),
@@ -95,8 +61,8 @@ public class LocalFileAccesser {
 
     public List<java.io.File> getDeletedFiles() {
         synchronized (mutex) {
-            List<File> dbFiles = this.service.getAll();
-            List<java.io.File> localFiles = getFiles();
+            List<FileModel> dbFiles = this.service.getAll();
+            List<java.io.File> localFiles = getLocalFiles();
 
             List<String> paths = new ArrayList<>();
             for (java.io.File f : localFiles) {
@@ -105,7 +71,7 @@ public class LocalFileAccesser {
 
             List<java.io.File> deletedFiles = new ArrayList<>();
             for (int i = 0; i < dbFiles.size(); i++) {
-                File f = dbFiles.get(i);
+                FileModel f = dbFiles.get(i);
                 if (!paths.contains(f.getPath())) {
                     deletedFiles.add(new java.io.File(f.getPath()));
                 }
@@ -119,28 +85,28 @@ public class LocalFileAccesser {
         synchronized (mutex) {
             LOGGER.info("Started indexing database, this may take awhile...");
 
-            List<java.io.File> localFiles = getFiles();
+            List<java.io.File> localFiles = getLocalFiles();
             int interval = Math.max(localFiles.size() / 10, 10);
 
             // Delete entries from database which have no local file representation
             // TODO
-            List<File> modelFiles = this.service.getAll();
-            for (int i = 0; i < localFiles.size(); i++) {
-                File f = toModelFile(localFiles.get(i));
-                for (int j = 0; j < modelFiles.size(); j++) {
-
-                }
-            }
+            // List<FileModel> modelFiles = this.service.getAll();
+            // for (int i = 0; i < localFiles.size(); i++) {
+            // FileModel f = toModelFile(localFiles.get(i));
+            // for (int j = 0; j < modelFiles.size(); j++) {
+            //
+            // }
+            // }
 
             // Add new or update existing entries in database
             for (int i = 0; i < localFiles.size(); i++) {
-                File f = toModelFile(localFiles.get(i));
+                FileModel f = FileUtility.toModelFile(localFiles.get(i));
                 if ((i + 1) % interval == 0) {
                     // Alot of files, display progress to user so they know it hasn't
                     // stalled
                     LOGGER.info("Indexing {} of {} files, processing {}", i + 1, localFiles.size(), f.getPath());
                 }
-                this.service.saveOrUpdate(f);
+                this.service.save(f);
             }
             LOGGER.info("Indexed database with local files");
         }

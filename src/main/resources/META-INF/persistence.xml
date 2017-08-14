@@ -3,11 +3,11 @@
   version="2.0">
   <persistence-unit name="persistence" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <class>com.github.dannil.jdfs.model.File</class>
+    <class>com.github.dannil.jdfs.model.FileModel</class>
     <properties>
       <!-- General configuration -->
       <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
-      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.hbm2ddl.auto" value="create" />
       <!-- <property name="hibernate.show_sql" value="true"/> -->
       <property name="hibernate.show_sql" value="false" />
 

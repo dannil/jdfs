@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "files")
-public class File {
+public class FileModel {
 
     // TODO THIS DOES NOT WORK
     // Id is null in database
@@ -36,11 +36,11 @@ public class File {
     @NotNull
     private String hash;
 
-    protected File() {
+    protected FileModel() {
         super();
     }
 
-    public File(String path, OffsetDateTime lastChanged, String hash) {
+    public FileModel(String path, OffsetDateTime lastChanged, String hash) {
         this();
         this.path = Objects.requireNonNull(path);
         this.lastChanged = Objects.requireNonNull(lastChanged);
@@ -94,16 +94,16 @@ public class File {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof File)) {
+        if (!(obj instanceof FileModel)) {
             return false;
         }
-        File f = (File) obj;
+        FileModel f = (FileModel) obj;
         return super.equals(f) && Objects.equals(this.path, f.path);
     }
 
     @Override
     public String toString() {
-        return "File [id=" + this.id + ", path=" + this.path + ", lastChanged=" + this.lastChanged + ", hash="
+        return "FileModel [id=" + this.id + ", path=" + this.path + ", lastChanged=" + this.lastChanged + ", hash="
                 + this.hash + "]";
     }
 

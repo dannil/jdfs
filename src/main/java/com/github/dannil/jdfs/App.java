@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 import com.github.dannil.jdfs.accesser.LocalFileAccesser;
-import com.github.dannil.jdfs.model.File;
+import com.github.dannil.jdfs.model.FileModel;
 import com.github.dannil.jdfs.rest.RemoteDatabase;
 import com.github.dannil.jdfs.rest.controller.FileController;
 
@@ -40,10 +40,24 @@ public class App {
 
         // TODO Implement check for changed files while application was turned off and
         // update local database with these changes
-        LocalFileAccesser accesser = LocalFileAccesser.getInstance();
-        // accesser.indexLocalDatabase();
 
-        for (java.io.File f : accesser.getDeletedFiles()) {
+        RemoteDatabase remoteDb = new RemoteDatabase();
+        Collection<FileModel> remoteFiles = remoteDb.getFiles();
+        System.out.println("REMOTE: " + remoteFiles);
+        for (FileModel f : remoteFiles) {
+            System.out.println("F1: " + f);
+        }
+
+        LocalFileAccesser localFileAccesser = LocalFileAccesser.getInstance();
+        Collection<FileModel> localFiles = localFileAccesser.getModelFiles();
+
+        for (FileModel f : localFiles) {
+            System.out.println("F2: " + f);
+        }
+
+        localFileAccesser.indexLocalDatabase();
+
+        for (java.io.File f : localFileAccesser.getDeletedFiles()) {
             // System.out.println(f);
         }
 
@@ -70,8 +84,8 @@ public class App {
             @Override
             public void run() {
                 RemoteDatabase db = new RemoteDatabase();
-                Collection<File> files = db.getFiles();
-                for (File f : files) {
+                Collection<FileModel> files = db.getFiles();
+                for (FileModel f : files) {
                     System.out.println(f);
                 }
             }

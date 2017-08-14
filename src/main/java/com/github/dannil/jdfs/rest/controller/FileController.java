@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.github.dannil.jdfs.model.File;
+import com.github.dannil.jdfs.model.FileModel;
 import com.github.dannil.jdfs.service.FileService;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,9 +43,9 @@ public class FileController {
     public Response getAll(@Context HttpServletRequest request) {
         LOGGER.info("Request for files information from {}", request.getRemoteAddr());
 
-        List<File> files = this.service.getAll();
+        List<FileModel> files = this.service.getAll();
         if (files != null) {
-            GenericEntity<List<File>> generic = new GenericEntity<List<File>>(files) {
+            GenericEntity<List<FileModel>> generic = new GenericEntity<List<FileModel>>(files) {
             };
             return Response.ok().entity(generic).build();
         }
@@ -58,9 +58,9 @@ public class FileController {
     public Response getById(@Context HttpServletRequest request, @PathParam("id") int id) {
         LOGGER.info("Request for file information with ID {} from {}", id, request.getRemoteAddr());
 
-        File file = this.service.getById(id);
+        FileModel file = this.service.getById(id);
         if (file != null) {
-            GenericEntity<File> generic = new GenericEntity<File>(file) {
+            GenericEntity<FileModel> generic = new GenericEntity<FileModel>(file) {
             };
             return Response.ok().entity(generic).build();
         }
@@ -75,7 +75,7 @@ public class FileController {
 
         LOGGER.info("HELLO!");
 
-        File f = this.service.getById(id);
+        FileModel f = this.service.getById(id);
 
         return Response.status(403).build();
     }
