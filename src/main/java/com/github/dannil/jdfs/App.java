@@ -1,8 +1,11 @@
 package com.github.dannil.jdfs;
 
+import java.util.Collection;
 import java.util.Objects;
 
-import com.github.dannil.jdfs.accesser.FileAccesser;
+import com.github.dannil.jdfs.accesser.LocalFileAccesser;
+import com.github.dannil.jdfs.model.File;
+import com.github.dannil.jdfs.rest.RemoteDatabase;
 import com.github.dannil.jdfs.rest.controller.FileController;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,8 +40,8 @@ public class App {
 
         // TODO Implement check for changed files while application was turned off and
         // update local database with these changes
-        FileAccesser accesser = FileAccesser.getInstance();
-        accesser.indexLocalDatabase();
+        LocalFileAccesser accesser = LocalFileAccesser.getInstance();
+        // accesser.indexLocalDatabase();
 
         for (java.io.File f : accesser.getDeletedFiles()) {
             // System.out.println(f);
@@ -63,6 +66,17 @@ public class App {
     }
 
     public void startExternalServices() throws Exception {
+        Thread one = new Thread() {
+            @Override
+            public void run() {
+                RemoteDatabase db = new RemoteDatabase();
+                Collection<File> files = db.getFiles();
+                for (File f : files) {
+                    System.out.println(f);
+                }
+            }
+        };
+
         LOGGER.info("Starting external services...");
 
         // Disable logging for Jetty
@@ -90,6 +104,7 @@ public class App {
 
         try {
             server.start();
+            one.start();
             LOGGER.info("Startup complete!");
             server.join();
         } finally {
@@ -98,9 +113,11 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
+
         App app = new App(args);
         app.startLocalServices();
         app.startExternalServices();
+
     }
 
 }

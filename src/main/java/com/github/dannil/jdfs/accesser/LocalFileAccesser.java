@@ -20,28 +20,28 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class FileAccesser {
+public class LocalFileAccesser {
 
-    private static final Logger LOGGER = LogManager.getLogger(FileAccesser.class);
+    private static final Logger LOGGER = LogManager.getLogger(LocalFileAccesser.class);
 
-    private static FileAccesser accesser;
+    private static LocalFileAccesser accesser;
 
     private static Object mutex = new Object();
 
     private FileService service;
 
-    public static FileAccesser getInstance() {
+    public static LocalFileAccesser getInstance() {
         if (accesser == null) {
             synchronized (mutex) {
                 if (accesser == null) {
-                    accesser = new FileAccesser();
+                    accesser = new LocalFileAccesser();
                 }
             }
         }
         return accesser;
     }
 
-    public FileAccesser() {
+    public LocalFileAccesser() {
         this.service = new FileService();
     }
 
