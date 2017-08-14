@@ -60,22 +60,6 @@ public class App {
         for (java.io.File f : localFileAccesser.getDeletedFiles()) {
             // System.out.println(f);
         }
-
-        // TEST CODE
-        // Random r = new Random();
-        // File f = new File("path/to/file" + r.nextInt(1000), ZonedDateTime.now());
-
-        // FileDBA dba = new FileDBA();
-        // dba.save(f);
-
-        // List<File> files = dba.getAll();
-        // for (File f1 : files) {
-        // System.out.println(f1);
-        // }
-        //
-        // System.out.println();
-        //
-        // System.out.println(dba.getById(4));
         LOGGER.info("Local services started");
     }
 

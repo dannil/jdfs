@@ -82,9 +82,7 @@ public class FileService {
     public FileModel getByPath(String path) {
         Query query = this.entityManager.createQuery("SELECT f FROM FileModel f WHERE f.path = :path");
         query.setParameter("path", path);
-        // List<File> fileWrapper = query.getResultList();
         return getSingleResult(query);
-        // return this.entityManager.find(File.class, path);
     }
 
     public FileModel getById(int id) {

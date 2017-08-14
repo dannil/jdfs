@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
@@ -20,19 +19,13 @@ public class FileUtility {
 
         // Get last changed time
         Instant i = Instant.ofEpochMilli(f.lastModified());
-
-        LocalDateTime t2 = LocalDateTime.ofInstant(i, ZoneId.systemDefault());
-
         OffsetDateTime t = OffsetDateTime.ofInstant(i, ZoneId.systemDefault());
-
-        // System.out.println(t);
-        // System.out.println(t2);
 
         // Get hash
         String hash = null;
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA1");
-            hash = FileUtility.getChecksum(digest, f);
+            hash = getChecksum(digest, f);
         } catch (NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException(e);
         }
