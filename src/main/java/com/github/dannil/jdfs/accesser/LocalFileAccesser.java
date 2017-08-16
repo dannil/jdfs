@@ -59,27 +59,27 @@ public class LocalFileAccesser {
         }
     }
 
-    public List<java.io.File> getDeletedFiles() {
-        synchronized (mutex) {
-            List<FileModel> dbFiles = this.service.getAll();
-            List<java.io.File> localFiles = getLocalFiles();
-
-            List<String> paths = new ArrayList<>();
-            for (java.io.File f : localFiles) {
-                paths.add(f.getPath());
-            }
-
-            List<java.io.File> deletedFiles = new ArrayList<>();
-            for (int i = 0; i < dbFiles.size(); i++) {
-                FileModel f = dbFiles.get(i);
-                if (!paths.contains(f.getPath())) {
-                    deletedFiles.add(new java.io.File(f.getPath()));
-                }
-            }
-            System.out.println("DELETED: " + deletedFiles);
-            return deletedFiles;
-        }
-    }
+    // public List<java.io.File> getDeletedFiles() {
+    // synchronized (mutex) {
+    // List<FileModel> dbFiles = this.service.getAll();
+    // List<java.io.File> localFiles = getLocalFiles();
+    //
+    // List<String> paths = new ArrayList<>();
+    // for (java.io.File f : localFiles) {
+    // paths.add(f.getPath());
+    // }
+    //
+    // List<java.io.File> deletedFiles = new ArrayList<>();
+    // for (int i = 0; i < dbFiles.size(); i++) {
+    // FileModel f = dbFiles.get(i);
+    // if (!paths.contains(f.getPath())) {
+    // deletedFiles.add(new java.io.File(f.getPath()));
+    // }
+    // }
+    // System.out.println("DELETED: " + deletedFiles);
+    // return deletedFiles;
+    // }
+    // }
 
     public void indexLocalDatabase() {
         synchronized (mutex) {

@@ -57,9 +57,9 @@ public class App {
 
         localFileAccesser.indexLocalDatabase();
 
-        for (java.io.File f : localFileAccesser.getDeletedFiles()) {
-            // System.out.println(f);
-        }
+        // for (java.io.File f : localFileAccesser.getDeletedFiles()) {
+        // // System.out.println(f);
+        // }
         LOGGER.info("Local services started");
     }
 
